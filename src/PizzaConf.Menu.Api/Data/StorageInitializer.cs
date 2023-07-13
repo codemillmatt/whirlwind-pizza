@@ -11,7 +11,10 @@ public static class StorageInitializer
         if (string.IsNullOrEmpty(storageUrl))
             return;
 
-        BlobContainerClient containerClient = new BlobContainerClient(new Uri(storageUrl), new DefaultAzureCredential());
+        // TODO: Uncomment during managed identity section
+        // BlobContainerClient containerClient = new BlobContainerClient(new Uri(storageUrl), new DefaultAzureCredential());
+
+        BlobContainerClient containerClient = new BlobContainerClient(storageUrl,"images");
 
         foreach (var imageFileName in Directory.GetFiles("media"))
         {

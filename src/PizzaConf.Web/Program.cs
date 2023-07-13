@@ -14,17 +14,19 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PizzaWebService>();
 builder.Services.AddSingleton<CartWebService>();
 
-builder.Configuration.AddAzureAppConfiguration((options) =>
-{
-    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
-    if (string.IsNullOrEmpty(appConfigUrl))
-        throw new NullReferenceException($"{nameof(appConfigUrl)} needs to be set to the value of the Azure App Config url");
+//TODO: Uncomment when using Azure App Config
 
-    // Make sure it doesn't blow up because it doesn't have access to key vault
-    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
-        .Select("cartUrl").Select("menuUrl").Select("trackingUrl").Select("DaprAppId*").Select("cdnUrl")
-        .ConfigureKeyVault(options => new DefaultAzureCredential());
-});
+//builder.Configuration.AddAzureAppConfiguration((options) =>
+//{
+//    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
+//    if (string.IsNullOrEmpty(appConfigUrl))
+//        throw new NullReferenceException($"{nameof(appConfigUrl)} needs to be set to the value of the Azure App Config url");
+
+//    // Make sure it doesn't blow up because it doesn't have access to key vault
+//    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
+//        .Select("cartUrl").Select("menuUrl").Select("trackingUrl").Select("DaprAppId*").Select("cdnUrl")
+//        .ConfigureKeyVault(options => new DefaultAzureCredential());
+//});
 
 var daprIds = builder.Configuration.GetSection("DaprAppId:PizzaConf").Get<DaprAppId>();
 

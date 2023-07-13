@@ -46,7 +46,7 @@ else
 
         pizza = await pizzaService.GetPizza(Id);
 
-        pizza.ImageUrl = $"{cdnUrl}/pizzaimages/{pizza.ImageUrl}";
+        pizza.ImageUrl = $"{cdnUrl}/media/{pizza.ImageUrl}";
     }
 
     private async Task AddToOrder()

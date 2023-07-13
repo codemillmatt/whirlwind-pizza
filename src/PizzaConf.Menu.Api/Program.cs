@@ -11,16 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Configuration.AddAzureAppConfiguration((options) =>
-{
-    string? appConfigUri = builder.Configuration["appConfigUrl"];
-    if (appConfigUri == null)
-        throw new NullReferenceException($"{nameof(appConfigUri)} setting needs to have the Azure App Config url set.");
+// TODO: Uncomment during App Config portion
 
-    options.Connect(new Uri(appConfigUri), new DefaultAzureCredential())
-        .Select("menuDb")
-        .ConfigureKeyVault(options => options.SetCredential(new DefaultAzureCredential()));
-});
+//builder.Configuration.AddAzureAppConfiguration((options) =>
+//{
+//    string? appConfigUri = builder.Configuration["appConfigUrl"];
+//    if (appConfigUri == null)
+//        throw new NullReferenceException($"{nameof(appConfigUri)} setting needs to have the Azure App Config url set.");
+
+//    options.Connect(new Uri(appConfigUri), new DefaultAzureCredential())
+//        .Select("menuDb")
+//        .ConfigureKeyVault(options => options.SetCredential(new DefaultAzureCredential()));
+//});
 
 builder.Services
     .AddSqlServer<PizzaContext>(builder.Configuration["menuDb"] ?? "Server=(localdb)\\mssqllocaldb;Database=MenuContext-0e9;Trusted_Connection=True;MultipleActiveResultSets=true",

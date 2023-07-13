@@ -11,17 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Configuration.AddAzureAppConfiguration((options) =>
-{
-    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
+// TODO: Uncomment when doing App Config
+//builder.Configuration.AddAzureAppConfiguration((options) =>
+//{
+//    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
 
-    if (string.IsNullOrEmpty(appConfigUrl))
-        throw new NullReferenceException($"{nameof(appConfigUrl)} setting needs to have the Azure App Config url set.");
+//    if (string.IsNullOrEmpty(appConfigUrl))
+//        throw new NullReferenceException($"{nameof(appConfigUrl)} setting needs to have the Azure App Config url set.");
     
-    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
-        .Select("CheckoutDb")
-        .ConfigureKeyVault((kvOptions) => kvOptions.SetCredential(new DefaultAzureCredential()));
-});
+//    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
+//        .Select("CheckoutDb")
+//        .ConfigureKeyVault((kvOptions) => kvOptions.SetCredential(new DefaultAzureCredential()));
+//});
 
 //builder.Services.AddSqlite<ShoppingCartContext>("Data Source=checkout.db");
 builder.Services.AddSqlServer<ShoppingCartContext>
