@@ -5,6 +5,7 @@ using PizzaConf.Web.Data;
 
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using PizzaConf.Web.Configuration;
+using Microsoft.Extensions.Azure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,14 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PizzaWebService>();
 builder.Services.AddSingleton<CartWebService>();
+
+//TODO: Uncomment when implementing SignalR
+builder.Services.AddSignalR().AddAzureSignalR(options =>
+{
+    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+    options.ConnectionString = builder.Configuration["signalRConnectionString"];
+});
+
 
 //TODO: Uncomment when using Azure App Config
 
@@ -72,7 +81,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+//TODO: Uncomment when implementing SignalR
+app.MapHub<PizzaConfSignalRHub>("/PizzaConfSignalRHub");
+
 app.MapBlazorHub();
+
 app.MapFallbackToPage("/_Host");
 
 app.Run();

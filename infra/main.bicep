@@ -81,12 +81,24 @@ module azureStorage 'storage.bicep' = {
   }
 }
 
+module signalR 'signal-r.bicep' = {
+  name: '${resourceToken}-signal-r'
+  scope: rg
+  params: {
+    location: location
+    resourceToken: resourceToken
+    tags: tags
+    abbrs: abbrs
+  }
+}
+
 module appServiceResources 'app-service.bicep' = {
   name: '${resourceToken}-app-service'
   scope: rg
   dependsOn: [
     azureSql
     azureStorage
+    signalR
   ]
   params: {
     location: location
