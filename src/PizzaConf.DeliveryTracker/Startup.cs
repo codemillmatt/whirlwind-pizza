@@ -9,19 +9,21 @@ namespace PizzaConf.DeliveryTracker;
 
 class Startup : FunctionsStartup
 {
-    public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
-    {
-        string appConfigUrl = Environment.GetEnvironmentVariable("appConfigUrl") ?? "";
+    //public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+    //{
+        // TODO: Uncomment this code to use Azure App Config
 
-        if (string.IsNullOrEmpty(appConfigUrl))
-            throw new NullReferenceException($"{nameof(appConfigUrl)} setting needs to be set to the Azure App Config url");
+        //string appConfigUrl = Environment.GetEnvironmentVariable("appConfigUrl") ?? "";
 
-        builder.ConfigurationBuilder.AddAzureAppConfiguration((options) =>
-        {
-            options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
-                .ConfigureKeyVault(kvOptions => kvOptions.SetCredential(new DefaultAzureCredential()));
-        });
-    }
+        //if (string.IsNullOrEmpty(appConfigUrl))
+        //    throw new NullReferenceException($"{nameof(appConfigUrl)} setting needs to be set to the Azure App Config url");
+
+        //builder.ConfigurationBuilder.AddAzureAppConfiguration((options) =>
+        //{
+        //    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
+        //        .ConfigureKeyVault(kvOptions => kvOptions.SetCredential(new DefaultAzureCredential()));
+        //});
+    //}
 
     public override void Configure(IFunctionsHostBuilder builder)
     {

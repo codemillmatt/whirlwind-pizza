@@ -15,7 +15,7 @@
     [Parameter]
     public int OrderId { get; set; }
 
-    public string? OrderStatusUrl { get; set; } = "https://pizzaconf.azureedge.net/pizzaimages/pizza1.jpg";
+    public string? OrderStatusUrl { get; set; } = "https://cdne-qd4im2wjogoiq.azureedge.net/media/pizza1.jpg";
     public string? OrderStatus { get; set; } = "Waiting for transmission...";
 
     HubConnection? hubConnection;
@@ -36,7 +36,7 @@
 
         hubConnection.On<TrackingMessage>("newMessage", (obj) =>
         {
-            OrderStatusUrl = $"{cdnUrl}/pizzaimages/{obj.StatusUrl}";
+            OrderStatusUrl = $"{cdnUrl}/media/{obj.StatusUrl}";
             OrderStatus = obj.Status;
             StateHasChanged();
         });
