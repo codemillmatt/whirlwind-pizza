@@ -90,3 +90,6 @@ output storageAccountResourceId string = storageAccount.id
 output storageAccocuntBlobURL string = storageAccount.properties.primaryEndpoints.blob
 output containerId string = container.id
 output containerName string = container.name
+//output storageConnectionString string = storageAccount.listKeys().keys[0].value
+output accountName string = storageAccount.name 
+output cdnEndpointUrl string = endpoint.properties.hostName

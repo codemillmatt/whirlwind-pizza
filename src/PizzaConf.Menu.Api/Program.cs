@@ -13,16 +13,16 @@ builder.Services.AddSwaggerGen();
 
 // TODO: Uncomment during App Config portion
 
-//builder.Configuration.AddAzureAppConfiguration((options) =>
-//{
-//    string? appConfigUri = builder.Configuration["appConfigUrl"];
-//    if (appConfigUri == null)
-//        throw new NullReferenceException($"{nameof(appConfigUri)} setting needs to have the Azure App Config url set.");
+builder.Configuration.AddAzureAppConfiguration((options) =>
+{
+    string? appConfigUri = builder.Configuration["appConfigUrl"];
+    if (appConfigUri == null)
+        throw new NullReferenceException($"{nameof(appConfigUri)} setting needs to have the Azure App Config url set.");
 
-//    options.Connect(new Uri(appConfigUri), new DefaultAzureCredential())
-//        .Select("menuDb")
-//        .ConfigureKeyVault(options => options.SetCredential(new DefaultAzureCredential()));
-//});
+    options.Connect(new Uri(appConfigUri), new DefaultAzureCredential())
+        .Select("menuDb")
+        .ConfigureKeyVault(options => options.SetCredential(new DefaultAzureCredential()));
+});
 
 builder.Services
     .AddSqlServer<PizzaContext>(builder.Configuration["menuDb"] ?? "Server=(localdb)\\mssqllocaldb;Database=MenuContext-0e9;Trusted_Connection=True;MultipleActiveResultSets=true",

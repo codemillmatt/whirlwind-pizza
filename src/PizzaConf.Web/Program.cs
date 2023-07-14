@@ -4,8 +4,9 @@ using Microsoft.AspNetCore.Components.Web;
 using PizzaConf.Web.Data;
 
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using PizzaConf.Web.Configuration;
+
 using Microsoft.Extensions.Azure;
+using Azure.Core.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,38 +16,31 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PizzaWebService>();
 builder.Services.AddSingleton<CartWebService>();
 
+//TODO: Uncomment when using Azure App Config
+
+builder.Configuration.AddAzureAppConfiguration((options) =>
+{
+    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
+    if (string.IsNullOrEmpty(appConfigUrl))
+        throw new NullReferenceException($"{nameof(appConfigUrl)} needs to be set to the value of the Azure App Config url");
+
+    // Make sure it doesn't blow up because it doesn't have access to key vault
+    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
+        .Select("Azure:SignalR:ConnectionString")
+        .ConfigureKeyVault(options => new DefaultAzureCredential());
+});
+
 //TODO: Uncomment when implementing SignalR
 builder.Services.AddSignalR().AddAzureSignalR(options =>
 {
-    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;   
+    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
+    options.ConnectionString = builder.Configuration["Azure:SignalR:ConnectionString"];
 });
-
-
-//TODO: Uncomment when using Azure App Config
-
-//builder.Configuration.AddAzureAppConfiguration((options) =>
-//{
-//    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
-//    if (string.IsNullOrEmpty(appConfigUrl))
-//        throw new NullReferenceException($"{nameof(appConfigUrl)} needs to be set to the value of the Azure App Config url");
-
-//    // Make sure it doesn't blow up because it doesn't have access to key vault
-//    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
-//        .Select("cartUrl").Select("menuUrl").Select("trackingUrl").Select("DaprAppId*").Select("cdnUrl")
-//        .ConfigureKeyVault(options => new DefaultAzureCredential());
-//});
-
-var daprIds = builder.Configuration.GetSection("DaprAppId:PizzaConf").Get<DaprAppId>();
 
 builder.Services.AddHttpClient<PizzaWebService>(client =>
 {
     string url = builder.Configuration["menuUrl"] ?? "http://localhost:3500";
     Uri baseAddress = new(url);
-
-    if (!string.IsNullOrEmpty(daprIds?.MenuApi))
-    {
-        client.DefaultRequestHeaders.Add("dapr-app-id", daprIds.MenuApi);
-    }
 
     client.BaseAddress = baseAddress;
 });
@@ -55,11 +49,6 @@ builder.Services.AddHttpClient<CartWebService>(client =>
 {
     string url = builder.Configuration["cartUrl"] ?? "http://localhost:3500";
     Uri baseAddress = new(url);
-
-    if (!string.IsNullOrEmpty(daprIds?.CheckoutApi))
-    {        
-        client.DefaultRequestHeaders.Add("dapr-app-id", daprIds.CheckoutApi);
-    }
         
     client.BaseAddress = baseAddress;
 });
@@ -81,7 +70,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 //TODO: Uncomment when implementing SignalR
-app.MapHub<PizzaConfSignalRHub>("/PizzaConfSignalRHub");
+//app.MapHub<PizzaConfSignalRHub>("/PizzaConfSignalRHub");
 
 app.MapBlazorHub();
 

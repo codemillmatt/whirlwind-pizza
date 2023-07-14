@@ -59,5 +59,5 @@ resource signalRFunctions 'Microsoft.SignalRService/signalR@2023-03-01-preview' 
   }
 }
 
-output signalRPrimaryConnectionString string = signalRBlazor.listKeys().primaryConnectionString
+output signalRBlazorConnectionString string = signalRBlazor.listKeys().primaryConnectionString
 output signalRFunctionsConnectionString string = signalRFunctions.listKeys().primaryConnectionString
