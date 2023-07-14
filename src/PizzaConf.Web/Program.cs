@@ -18,8 +18,7 @@ builder.Services.AddSingleton<CartWebService>();
 //TODO: Uncomment when implementing SignalR
 builder.Services.AddSignalR().AddAzureSignalR(options =>
 {
-    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;
-    options.ConnectionString = builder.Configuration["signalRConnectionString"];
+    options.ServerStickyMode = Microsoft.Azure.SignalR.ServerStickyMode.Required;   
 });
 
 
