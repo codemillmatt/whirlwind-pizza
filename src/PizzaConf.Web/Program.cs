@@ -16,20 +16,6 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<PizzaWebService>();
 builder.Services.AddSingleton<CartWebService>();
 
-//TODO: Uncomment when using Azure App Config
-
-builder.Configuration.AddAzureAppConfiguration((options) =>
-{
-    string? appConfigUrl = builder.Configuration["appConfigUrl"] ?? "";
-    if (string.IsNullOrEmpty(appConfigUrl))
-        throw new NullReferenceException($"{nameof(appConfigUrl)} needs to be set to the value of the Azure App Config url");
-
-    // Make sure it doesn't blow up because it doesn't have access to key vault
-    options.Connect(new Uri(appConfigUrl), new DefaultAzureCredential())
-        .Select("Azure:SignalR:ConnectionString")
-        .ConfigureKeyVault(options => new DefaultAzureCredential());
-});
-
 //TODO: Uncomment when implementing SignalR
 builder.Services.AddSignalR().AddAzureSignalR(options =>
 {
@@ -70,7 +56,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 //TODO: Uncomment when implementing SignalR
-//app.MapHub<PizzaConfSignalRHub>("/PizzaConfSignalRHub");
+app.MapHub<PizzaConfSignalRHub>("/PizzaConfSignalRHub");
 
 app.MapBlazorHub();
 

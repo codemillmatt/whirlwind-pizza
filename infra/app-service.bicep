@@ -23,6 +23,14 @@ param managedIdentityName string
 @description('Name of the App Config Service')
 param appConfigServiceName string
 
+@minLength(1)
+@description('Blazor signalr connection string')
+param blazorSignalrConnectionString string
+
+@minLength(1)
+@description('CDN endpoint')
+param cdnEndpoint string
+
 resource appConfigSvc 'Microsoft.AppConfiguration/configurationStores@2023-03-01' existing = {
   name: appConfigServiceName
 }
@@ -94,15 +102,16 @@ resource frontEnd 'Microsoft.Web/sites@2022-09-01' = {
       AZURE_CLIENT_ID: managedIdentity.properties.clientId
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
       APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
-      //APPLICATIONINSIGHTS_CONNECTION_STRING: webApplicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
-      //SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
-      // App Insights settings
-      // https://learn.microsoft.com/azure/azure-monitor/app/azure-web-apps-net#application-settings-definitions
-      //APPINSIGHTS_INSTRUMENTATIONKEY: webApplicationInsightsResources.outputs.APPLICATIONINSIGHTS_INSTRUMENTATION_KEY
       ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
       XDT_MicrosoftApplicationInsights_Mode: 'recommended'
       InstrumentationEngine_EXTENSION_VERSION: '~1'
       XDT_MicrosoftApplicationInsights_BaseExtensions: '~1'
+      'Azure:SignalR:Enabled': 'true'
+      'Azure:SignalR:ConnectionString': blazorSignalrConnectionString
+      menuUrl: 'https://${menuApi.properties.defaultHostName}'
+      cartUrl: 'https://${checkoutApi.properties.defaultHostName}'
+      trackingUrl: ''
+      cdnUrl: 'https://${cdnEndpoint}'
     }
   }
 }

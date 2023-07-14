@@ -16,18 +16,6 @@ param resourceToken string
 @secure()
 param storageAccountName string
 
-@description('Connection string for Azure SignalR Blazor instance')
-@secure()
-param signalRBlazorConnectionString string
-
-@description('Connection string for the Azure SignalR Functions instance')
-@secure()
-param signalRFunctionsConnectionString string
-
-@minLength(1)
-@description('Url of the CDN endpoint')
-param cdnUrl string
-
 @minLength(1)
 @description('SQL Admin username')
 param sqlAdminUsername string
@@ -105,22 +93,6 @@ resource storageConnectionValue 'Microsoft.KeyVault/vaults/secrets@2023-02-01' =
   }
 }
 
-resource signalRBlazorConnectionValue 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  parent: keyVault
-  name: 'signalr-connection-string'
-  properties: {
-    value: signalRBlazorConnectionString
-  }
-}
-
-resource signalRFunctionsConnectionValue 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  parent: keyVault
-  name: 'signalr-functions-connection-string'
-  properties: {
-    value: signalRFunctionsConnectionString
-  }
-}
-
 resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' = {
   name: '${abbrs.appConfigurationConfigurationStores}${resourceToken}'
   location: location
@@ -162,61 +134,6 @@ resource appConfig 'Microsoft.AppConfiguration/configurationStores@2023-03-01' =
         uri: '${keyVault.properties.vaultUri}secrets/${storageConnectionValue.name}'
       })
       contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
-    }
-  }
-
-  resource signalRBlazorKVSettings 'keyValues@2023-03-01' = {
-    name: 'Azure:SignalR:ConnectionString'
-    properties: {
-      value: string({
-        uri: '${keyVault.properties.vaultUri}secrets/${signalRBlazorConnectionValue.name}'
-      })
-      contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
-    }
-  }
-
-  resource signalRBlazorEnabledKVSettings 'keyValues@2023-03-01' = {
-    name: 'Azure:SignalR:Enabled'
-    properties: {
-      value: 'true'
-    }
-  }
-
-  resource signalRFunctionsKVSettings 'keyValues@2023-03-01' = {
-    name: 'AzureSignalRConnectionString'
-    properties: {
-      value: string({
-        uri: '${keyVault.properties.vaultUri}secrets/${signalRFunctionsConnectionValue.name}'
-      })
-      contentType: 'application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8'
-    }
-  }
-
-  resource cdnUrlSetting 'keyValues@2023-03-01' = {
-    name: 'cdnUrl'
-    properties: {
-      value: cdnUrl
-    }
-  }
-
-  resource menuUrlSetting 'keyValues@2023-03-01' = {
-    name: 'menuUrl'
-    properties: {
-      value: 'https://localhost:7180'
-    }
-  }
-
-  resource cartUrlSetting 'keyValues@2023-03-01' = {
-    name: 'cartUrl'
-    properties: {
-      value: 'https://localhost:7226'
-    }
-  }
-
-  resource trackingUrlSetting 'keyValues@2023-03-01' = {
-    name: 'trackingUrl'
-    properties: {
-      value: 'http://localhost:7071/api'
     }
   }
 }

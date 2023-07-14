@@ -97,9 +97,6 @@ module keyvault 'keyvault.bicep' = {
     resourceToken: resourceToken
     tags: tags
     abbrs: abbrs
-    signalRBlazorConnectionString: signalR.outputs.signalRBlazorConnectionString
-    signalRFunctionsConnectionString: signalR.outputs.signalRFunctionsConnectionString
-    cdnUrl: azureStorage.outputs.cdnEndpointUrl
     checkoutDbName: azureSql.outputs.sqlDbCheckoutName
     menuDbName: azureSql.outputs.sqlDbMenuName
     sqlAdminPassword: azureSqlPassword
@@ -145,6 +142,8 @@ module appServiceResources 'app-service.bicep' = {
     abbrs: abbrs
     managedIdentityName: managedIdentity.outputs.managedIdentityName
     appConfigServiceName: keyvault.outputs.appConfigName
+    blazorSignalrConnectionString: signalR.outputs.signalRBlazorConnectionString
+    cdnEndpoint: azureStorage.outputs.cdnEndpointUrl
   }
 }
 
