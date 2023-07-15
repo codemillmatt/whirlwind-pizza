@@ -28,6 +28,18 @@ param appConfigServiceName string
 param blazorSignalrConnectionString string
 
 @minLength(1)
+@description('Functions SignalR connection string')
+param functionsSignalrConnectionString string
+
+@minLength(1)
+@description('Storage account name')
+param storageAccountName string
+
+resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+  name: storageAccountName
+}
+
+@minLength(1)
 @description('CDN endpoint')
 param cdnEndpoint string
 
@@ -110,7 +122,7 @@ resource frontEnd 'Microsoft.Web/sites@2022-09-01' = {
       'Azure:SignalR:ConnectionString': blazorSignalrConnectionString
       menuUrl: 'https://${menuApi.properties.defaultHostName}'
       cartUrl: 'https://${checkoutApi.properties.defaultHostName}'
-      trackingUrl: ''
+      trackingUrl: 'https://${functionApp.properties.defaultHostName}'
       cdnUrl: 'https://${cdnEndpoint}'
     }
   }
@@ -144,12 +156,6 @@ resource menuApi 'Microsoft.Web/sites@2022-09-01' = {
       AZURE_CLIENT_ID: managedIdentity.properties.clientId
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
       APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
-      //APPLICATIONINSIGHTS_CONNECTION_STRING: webApplicationInsightsResources.outputs.APPLICATIONINSIGHTS_CONNECTION_STRING
-      //'App:AppConfig:Uri': appConfigService.properties.endpoint
-      //SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
-      // App Insights settings
-      // https://learn.microsoft.com/azure/azure-monitor/app/azure-web-apps-net#application-settings-definitions
-      //APPINSIGHTS_INSTRUMENTATIONKEY: webApplicationInsightsResources.outputs.APPLICATIONINSIGHTS_INSTRUMENTATION_KEY
       ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
       XDT_MicrosoftApplicationInsights_Mode: 'recommended'
       InstrumentationEngine_EXTENSION_VERSION: '~1'
@@ -199,3 +205,58 @@ resource checkoutApi 'Microsoft.Web/sites@2022-09-01' = {
     }
   }
 }
+
+resource functionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${abbrs.webSitesFunctions}${resourceToken}'
+  location: location
+  tags: union(tags, {
+    'azd-service-name': 'tracker-function'
+  })
+  kind: 'functionapp'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${managedIdentity.id}': {}
+    }
+  }
+  properties: {
+    serverFarmId: webAppServicePlan.id
+    httpsOnly: true
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccountName};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTSHARE'
+          value: toLower('${abbrs.webSitesFunctions}${resourceToken}')
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~4'
+        }
+        {
+          name: 'WEBSITE_NODE_DEFAULT_VERSION'
+          value: '~14'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: appInsights.properties.InstrumentationKey
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: 'dotnet'
+        }
+        {
+          name: 'AzureSignalRConnectionString'
+          value: functionsSignalrConnectionString
+        }
+      ]
+    }
+  }
+}  

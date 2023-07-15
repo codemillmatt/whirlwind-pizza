@@ -15,3 +15,7 @@ services:
     language: csharp
     project: src/PizzaConf.Web
     host: appservice
+  tracker-function:
+    language: csharp
+    project: src/PizzaConf.DeliveryTracker
+    host: function

@@ -144,6 +144,8 @@ module appServiceResources 'app-service.bicep' = {
     appConfigServiceName: keyvault.outputs.appConfigName
     blazorSignalrConnectionString: signalR.outputs.signalRBlazorConnectionString
     cdnEndpoint: azureStorage.outputs.cdnEndpointUrl
+    functionsSignalrConnectionString: signalR.outputs.signalRFunctionsConnectionString
+    storageAccountName: azureStorage.outputs.accountName
   }
 }
 
