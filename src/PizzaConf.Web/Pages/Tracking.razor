@@ -38,7 +38,8 @@
         {
             OrderStatusUrl = $"{cdnUrl}/media/{obj.StatusUrl}";
             OrderStatus = obj.Status;
-            StateHasChanged();
+            InvokeAsync(() => StateHasChanged());
+            //StateHasChanged();
         });
 
         await hubConnection.StartAsync();

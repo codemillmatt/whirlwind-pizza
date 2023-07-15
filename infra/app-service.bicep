@@ -122,7 +122,7 @@ resource frontEnd 'Microsoft.Web/sites@2022-09-01' = {
       'Azure:SignalR:ConnectionString': blazorSignalrConnectionString
       menuUrl: 'https://${menuApi.properties.defaultHostName}'
       cartUrl: 'https://${checkoutApi.properties.defaultHostName}'
-      trackingUrl: 'https://${functionApp.properties.defaultHostName}'
+      trackingUrl: 'https://${functionApp.properties.defaultHostName}/api'
       cdnUrl: 'https://${cdnEndpoint}'
     }
   }
