@@ -114,6 +114,7 @@ resource frontEnd 'Microsoft.Web/sites@2022-09-01' = {
       AZURE_CLIENT_ID: managedIdentity.properties.clientId
       APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
       APPINSIGHTS_INSTRUMENTATIONKEY: appInsights.properties.InstrumentationKey
+      ASPNETCORE_HOSTINGSTARTUPASSEMBLIES: 'Microsoft.Azure.SignalR'
       ApplicationInsightsAgent_EXTENSION_VERSION: '~2'
       XDT_MicrosoftApplicationInsights_Mode: 'recommended'
       InstrumentationEngine_EXTENSION_VERSION: '~1'
