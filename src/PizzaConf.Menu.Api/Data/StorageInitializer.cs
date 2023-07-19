@@ -16,6 +16,7 @@ public static class StorageInitializer
 
         BlobContainerClient containerClient = new BlobContainerClient(storageUrl, "images");
 
+        
         foreach (var imageFileName in Directory.GetFiles("media"))
         {
             try
