@@ -25,8 +25,9 @@ builder.Services.AddSwaggerGen();
 //});
 
 builder.Services
-    .AddSqlServer<PizzaContext>(builder.Configuration["menuDb"] ?? "Server=(localdb)\\mssqllocaldb;Database=MenuContext-0e9;Trusted_Connection=True;MultipleActiveResultSets=true",
-    (options) => options.EnableRetryOnFailure());
+    .AddSqlServer<PizzaContext>(builder.Configuration["menuDb"]!,
+        (options) => options.EnableRetryOnFailure()
+    );
 
 builder.Services.AddTransient<PizzaService>();
 
